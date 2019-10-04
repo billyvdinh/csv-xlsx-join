@@ -16,6 +16,6 @@
 
 ```python main.py --set dir=<data directory path> output=<output file path>```
 
-For example, if you have all the csv files in the ```data``` directory, you can run script as follow:
+For example, if you have all the csv/xlsx files in the ```data/``` directory, you can run script as follow:
 
 ```python main.py --set dir=data/ output=data/data.csv```
