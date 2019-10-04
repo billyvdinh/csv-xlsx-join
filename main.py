@@ -126,13 +126,13 @@ def mapping_row2medatada(header_mapping, row):
 
 def parse_csv_file(directory_path, file):
     '''
-
+    parse a csv file.
     :param directory_path:
     :param file:
     :return:
     '''
     path = '{}/{}'.format(directory_path, file)
-    print("parsing {}".format(path))
+    print("\nparsing {}".format(path))
 
     header_mapping = {}
     mapped_data_list = []
@@ -153,21 +153,19 @@ def parse_csv_file(directory_path, file):
 
 def parse_xlsx_file(directory_path, file):
     '''
-
+    parse a xlsx file
     :param directory_path:
     :param file:
     :return:
     '''
     path = '{}/{}'.format(directory_path, file)
-    print("parsing {}".format(path))
+    print("\nparsing {}".format(path))
 
     header_mapping = {}
     mapped_data_list = []
     wb = xlrd.open_workbook(path)
     sheet = wb.sheet_by_index(0)
-    print(sheet.cell_value(0, 0))
     for i in range(sheet.nrows):
-        print(sheet.row_values(i))
         if i == 0:
             header_mapping = mapping_header2metadata(directory_path, sheet.row_values(i))
         else:
@@ -179,7 +177,7 @@ def parse_xlsx_file(directory_path, file):
 
 def join_files(directory_path, output_path):
     '''
-
+    loop each files from the data directory.
     :param directory_path:
     :param output_path:
     :return:
@@ -202,6 +200,7 @@ def join_files(directory_path, output_path):
     with open(directory_path + '/metadata.json') as medatada_file:
         metadata = json.load(medatada_file)
 
+    print('\nJoining files to {}'.format(output_path))
     with open(output_path, 'w') as f:
         w = csv.DictWriter(f, metadata.keys())
         w.writeheader()
@@ -241,6 +240,7 @@ def main():
         if filename.split('.')[-1] != 'csv':
             print("Invalid output file name: {}".format(filename))
             sys.exit()
+    os.remove(output_file)
 
     print("\n***Checking matadata file***")
     medatada_path = data_directory + "/metadata.json"
@@ -258,7 +258,7 @@ def main():
 
     print("\n***Joining files ***")
     join_files(data_directory, output_file)
-    print("Finished joining files!!!")
+    print("\nFinished joining files!!!")
 
 
 if __name__ == '__main__':
