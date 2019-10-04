@@ -2,7 +2,7 @@ import sys
 import os
 import json
 import csv
-import pandas as pd
+import xlrd
 from arg_parser import parse_argments
 
 
@@ -64,30 +64,33 @@ def mapping_header2metadata(directory_path, header):
                 break
         if header_mapping[field] == '':
             while True:
-                print("{}:New header found. Select a below mapping options.".format(field))
                 mapping_list = ["Ignore", ]
-                print_string = "[0]:Ignore\n"
+                print_string = "[0]: Ignore\n"
                 count = 1
                 for meta_field in metadata:
                     print_string += "[{}]: {}\n".format(count, meta_field)
                     mapping_list.append(meta_field)
                     count += 1
-                print_string += "[{}]: Add new metadata\n".format(count)
+                print_string += "[a]: Add new metadata"
                 print(print_string)
 
+                option = 'a'
                 while True:
                     try:
-                        option = int(input("[0]"))
+                        option = input("{}: New header found. Select a mapping options:".format(field))
+                        option = int(option)
                         break
                     except ValueError:
+                        if option == 'a':
+                            break
                         print("Invalid input. Try again.")
                         continue
 
                 if option == 0:
-                    header_mapping[field] = 0
+                    header_mapping[field] = "--ignore--"
                     break
-                elif option == count:
-                    header_mapping[field] = 0
+                elif option == 'a':
+                    header_mapping[field] = field
                     metadata[field] = [field, ]
                     metadata_updated = True
                     break
@@ -107,13 +110,27 @@ def mapping_header2metadata(directory_path, header):
     print(header_mapping)
     return header_mapping
 
-def mapping_row2medatada(header_mapping, row):
-    mapped_data = {}
 
+def mapping_row2medatada(header_mapping, row):
+    '''
+    map each rows to [mapdata key: row value] pair
+    :param header_mapping: [csv/xlsx header: mapdata]
+    :param row: csv/xlsx row
+    :return:
+    '''
+    header = list(header_mapping.values())
+    mapped_data = dict(zip(header, row))
+    print(mapped_data)
     return mapped_data
 
 
 def parse_csv_file(directory_path, file):
+    '''
+
+    :param directory_path:
+    :param file:
+    :return:
+    '''
     path = '{}/{}'.format(directory_path, file)
     print("parsing {}".format(path))
 
@@ -129,20 +146,44 @@ def parse_csv_file(directory_path, file):
                 mapped_data = mapping_row2medatada(header_mapping, row)
                 mapped_data_list.append(mapped_data)
             line_count += 1
-            print(row)
     csvFile.close()
 
     return mapped_data_list
 
 
 def parse_xlsx_file(directory_path, file):
+    '''
+
+    :param directory_path:
+    :param file:
+    :return:
+    '''
     path = '{}/{}'.format(directory_path, file)
     print("parsing {}".format(path))
-    parsed = []
-    return parsed
+
+    header_mapping = {}
+    mapped_data_list = []
+    wb = xlrd.open_workbook(path)
+    sheet = wb.sheet_by_index(0)
+    print(sheet.cell_value(0, 0))
+    for i in range(sheet.nrows):
+        print(sheet.row_values(i))
+        if i == 0:
+            header_mapping = mapping_header2metadata(directory_path, sheet.row_values(i))
+        else:
+            mapped_data = mapping_row2medatada(header_mapping, sheet.row_values(i))
+            mapped_data_list.append(mapped_data)
+
+    return mapped_data_list
 
 
 def join_files(directory_path, output_path):
+    '''
+
+    :param directory_path:
+    :param output_path:
+    :return:
+    '''
     print("Joining files from {}, to {}".format(directory_path, output_path))
     files = os.listdir(directory_path)
 
@@ -156,6 +197,19 @@ def join_files(directory_path, output_path):
         else:
             continue
         joined_list.extend(parsed_list)
+
+    metadata = {}
+    with open(directory_path + '/metadata.json') as medatada_file:
+        metadata = json.load(medatada_file)
+
+    with open(output_path, 'w') as f:
+        w = csv.DictWriter(f, metadata.keys())
+        w.writeheader()
+        for item in joined_list:
+            if '--ignore--' in item: del item['--ignore--']
+            w.writerow(item)
+
+    print(joined_list)
 
 
 def main():
@@ -204,6 +258,7 @@ def main():
 
     print("\n***Joining files ***")
     join_files(data_directory, output_file)
+    print("Finished joining files!!!")
 
 
 if __name__ == '__main__':
