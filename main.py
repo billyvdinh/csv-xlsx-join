@@ -34,7 +34,7 @@ def create_metadata_file(path):
             if answer == 'y' or answer == 'Y' or answer == "":
                 break
 
-    metadata = {}
+    metadata = {"Ignore": ["Ignore", ]}
     for header in headers:
         metadata[header] = [header, ]
 
@@ -64,9 +64,9 @@ def mapping_header2metadata(directory_path, header):
                 break
         if header_mapping[field] == '':
             while True:
-                mapping_list = ["Ignore", ]
-                print_string = "[0]: Ignore\n"
-                count = 1
+                mapping_list = []
+                print_string = ""
+                count = 0
                 for meta_field in metadata:
                     print_string += "[{}]: {}\n".format(count, meta_field)
                     mapping_list.append(meta_field)
@@ -86,15 +86,12 @@ def mapping_header2metadata(directory_path, header):
                         print("Invalid input. Try again.")
                         continue
 
-                if option == 0:
-                    header_mapping[field] = "--ignore--"
-                    break
-                elif option == 'a':
+                if option == 'a':
                     header_mapping[field] = field
                     metadata[field] = [field, ]
                     metadata_updated = True
                     break
-                elif count > option > 0:
+                elif count > option >= 0:
                     header_mapping[field] = mapping_list[option]
                     metadata[mapping_list[option]].append(field)
                     metadata_updated = True
@@ -186,7 +183,6 @@ def join_files(directory_path, output_path):
     files = os.listdir(directory_path)
 
     joined_list = []
-    parsed_list = []
     for file in files:
         if file.split('.')[-1] == 'csv':
             parsed_list = parse_csv_file(directory_path, file)
@@ -199,15 +195,15 @@ def join_files(directory_path, output_path):
     metadata = {}
     with open(directory_path + '/metadata.json') as medatada_file:
         metadata = json.load(medatada_file)
+    del metadata["Ignore"]
 
     print('\nJoining files to {}'.format(output_path))
     with open(output_path, 'w') as f:
         w = csv.DictWriter(f, metadata.keys())
         w.writeheader()
         for item in joined_list:
-            if '--ignore--' in item: del item['--ignore--']
+            if 'Ignore' in item: del item['Ignore']
             w.writerow(item)
-
     print(joined_list)
 
 
@@ -215,15 +211,17 @@ def main():
     print("***Checking commandline options***")
     opt_values = parse_argments()
 
-    data_directory = ""
+    data_directory = "data"
     try:
         data_directory = opt_values['dir'].strip("/")
         if not os.path.isdir(data_directory):
             print("Directory not exists: path={}".format(data_directory))
             sys.exit()
     except KeyError:
-        print("Directory option not found: dir=<path>")
-        sys.exit()
+        if not os.path.isdir(data_directory):
+            print("Default directory not exists: path={}".format(data_directory))
+            sys.exit()
+        pass
     print("Start joining files from {}".format(data_directory))
 
     output_file = ""
@@ -240,7 +238,10 @@ def main():
         if filename.split('.')[-1] != 'csv':
             print("Invalid output file name: {}".format(filename))
             sys.exit()
-    os.remove(output_file)
+    try:
+        os.remove(output_file)
+    except FileNotFoundError:
+        pass
 
     print("\n***Checking matadata file***")
     medatada_path = data_directory + "/metadata.json"
@@ -249,7 +250,7 @@ def main():
         if answer == 'y' or answer == 'Y' or answer == "":
             create_metadata_file(medatada_path)
         else:
-            metadata = {}
+            metadata = {"Ignore": ["Ignore", ]}
             with open(medatada_path, 'w') as metadata_file:
                 json.dump(metadata, metadata_file, indent=4)
             print("Skip adding metadata.")

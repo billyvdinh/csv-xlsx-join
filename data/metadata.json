@@ -1,6 +1,13 @@
 {
+    "Ignore": [
+        "Ignore",
+        "Affiliation",
+        "Side",
+        "DMA"
+    ],
     "\ufeffid": [
-        "\ufeffid"
+        "\ufeffid",
+        "prefix"
     ],
     "f_name": [
         "f_name",
@@ -34,18 +41,6 @@
         "zip",
         "Zipcode",
         "mailingaddresszip"
-    ],
-    "Affiliation": [
-        "Affiliation"
-    ],
-    "Side": [
-        "Side"
-    ],
-    "prefix": [
-        "prefix"
-    ],
-    "DMA": [
-        "DMA"
     ],
     "Country": [
         "Country"
