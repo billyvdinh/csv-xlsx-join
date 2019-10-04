@@ -4,8 +4,14 @@
 
 ```git clone https://github.com/mbpup/multifile_joiner.git```
 
+## Running script
+
 ```cd  multifile_joiner/```
 
+### Install dependencies
+
 ```pip install -r requirements.txt```
+
+### Run Script
 
 ```python main.py --set dir=<data directory path> output=<output file path>```
