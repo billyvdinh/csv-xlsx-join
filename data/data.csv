@@ -1,0 +1,7 @@
+﻿id,f_name,m_name,l_name,gender,birthyear,city,state,zip,Affiliation,Side,prefix,DMA,Country
+22,joe,,smith,male,1956,,IN,47203,,,,,
+53,sara,ann,thompson,female,1987,,OH,42102,,,,,
+,Thomas,,Turbin,Male,1944,,CA,90210,I,,,,
+,Erin,ann,Janes,F,1992,,WY,32123,xp,,,,
+,Jim,,thomas,Male,1990.0,,CA,90210.0,,,Mr,803.0,USA
+,Erin,ann,abbot,F,1971.0,,WY,32123.0,,,Mrs,803.0,USA

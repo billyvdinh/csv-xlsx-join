@@ -1,0 +1,53 @@
+{
+    "\ufeffid": [
+        "\ufeffid"
+    ],
+    "f_name": [
+        "f_name",
+        "\ufefffirst",
+        "first"
+    ],
+    "m_name": [
+        "m_name",
+        "middle"
+    ],
+    "l_name": [
+        "l_name",
+        "last"
+    ],
+    "gender": [
+        "gender",
+        "sex"
+    ],
+    "birthyear": [
+        "birthyear",
+        "BirthDayYear"
+    ],
+    "city": [
+        "city"
+    ],
+    "state": [
+        "state",
+        "State"
+    ],
+    "zip": [
+        "zip",
+        "Zipcode",
+        "mailingaddresszip"
+    ],
+    "Affiliation": [
+        "Affiliation"
+    ],
+    "Side": [
+        "Side"
+    ],
+    "prefix": [
+        "prefix"
+    ],
+    "DMA": [
+        "DMA"
+    ],
+    "Country": [
+        "Country"
+    ]
+}
